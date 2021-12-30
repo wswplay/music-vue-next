@@ -1,4 +1,5 @@
 const path = require("path");
+const registerRouter = require("./backend/router");
 
 module.exports = {
   pluginOptions: {
@@ -9,6 +10,11 @@ module.exports = {
         path.resolve(__dirname, "src/assets/style/variable.less"),
         path.resolve(__dirname, "src/assets/style/mixin.less"),
       ],
+    },
+  },
+  devServer: {
+    before(app) {
+      registerRouter(app);
     },
   },
 };

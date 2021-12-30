@@ -1,7 +1,7 @@
 <template>
   <div class="header">
-    <span class="icon"></span>
-    <h1 class="text">{{ appTitle }}</h1>
+    <span class="icon" @click="goIndex"></span>
+    <h1 class="text" @click="goIndex">{{ appTitle }}</h1>
     <router-link class="mine" to="/user">
       <i class="icon-mine"></i>
     </router-link>
@@ -15,6 +15,11 @@ export default {
     return {
       appTitle: "Chicken Music",
     };
+  },
+  methods: {
+    goIndex() {
+      this.$router.push("/");
+    },
   },
 };
 </script>
