@@ -20,7 +20,8 @@
 </template>
 
 <script>
-// import ref from "vue";
+import { ref } from "vue";
+import useSlider from "./use-slider";
 
 export default {
   name: "slider",
@@ -33,7 +34,12 @@ export default {
     },
   },
   setup() {
-    // sth
+    const rootRef = ref(null);
+    const { currentPageIndex } = useSlider(rootRef);
+    return {
+      rootRef,
+      currentPageIndex,
+    };
   },
 };
 </script>
