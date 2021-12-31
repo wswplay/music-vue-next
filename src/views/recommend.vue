@@ -1,12 +1,18 @@
 <template>
-  <div>推荐</div>
+  <div class="recommend">
+    <Slider></Slider>
+  </div>
 </template>
 
 <script>
 import { getRecommend } from "@/service/recommend";
+import Slider from "@/components/base/slider/slider";
 
 export default {
   name: "recommend",
+  components: {
+    Slider,
+  },
   async created() {
     const result = await getRecommend();
     console.log(result);

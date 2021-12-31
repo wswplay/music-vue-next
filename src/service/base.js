@@ -1,10 +1,10 @@
 import axios from "wswplay-ts-rest-axios";
+axios.defaults = axios.defaultConf;
 
 const baseURL = "/";
-const defaults = "defaultConf";
 const ERR_CODE = 0;
 
-axios[defaults].url = baseURL;
+axios.defaults.url = baseURL;
 
 export function get(url, params) {
   return axios
