@@ -5,11 +5,11 @@ import { onMounted, onUnmounted, ref } from "vue";
 
 BScroll.use(Slide);
 
-export default function userSlider(wapperRef) {
+export default function userSlider(wrapperRef) {
   const slider = ref(null);
   const currentPageIndex = ref(0);
   onMounted(() => {
-    slider.value = new BScroll(wapperRef.value, {
+    slider.value = new BScroll(wrapperRef.value, {
       click: true,
       scrollX: true,
       scrollY: false,
