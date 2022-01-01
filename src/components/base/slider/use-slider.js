@@ -23,7 +23,7 @@ export default function userSlider(wrapperRef) {
     });
   });
   onUnmounted(() => {
-    slider.value.destory();
+    slider.value.destroy();
   });
   return {
     slider,
