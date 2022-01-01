@@ -1,5 +1,5 @@
 <template>
-  <div class="recommend" v-loading="loading">
+  <div class="recommend" v-loading:[loadingTitle]="loading">
     <Scroll class="recommend-content">
       <div>
         <div class="slider-wrapper">
@@ -50,6 +50,7 @@ export default {
     return {
       sliders: [],
       albums: [],
+      loadingTitle: "看，灰机...",
     };
   },
   async created() {
@@ -66,7 +67,6 @@ export default {
   width: 100%;
   top: 88px;
   bottom: 0;
-  // overflow: scroll;
   .recommend-content {
     height: 100%;
     overflow: hidden;
