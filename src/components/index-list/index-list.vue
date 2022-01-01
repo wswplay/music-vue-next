@@ -14,12 +14,26 @@
     <div class="fixed" v-show="fixedTitle" :style="fixedStyle">
       <div class="fixed-title">{{ fixedTitle }}</div>
     </div>
+    <div class="shortcut">
+      <ul>
+        <li
+          v-for="(item, index) in shortcutList"
+          :key="item"
+          :data-index="index"
+          class="item"
+          :class="{ current: curIndex === index }"
+        >
+          {{ item }}
+        </li>
+      </ul>
+    </div>
   </scroll>
 </template>
 
 <script>
 import Scroll from "@/components/base/scroll/scroll";
 import useFixed from "./use-fixed";
+import useShortcut from "./use-shortcut";
 
 export default {
   name: "index-list",
@@ -33,12 +47,16 @@ export default {
     },
   },
   setup(props) {
-    const { groupRef, onScroll, fixedTitle, fixedStyle } = useFixed(props);
+    const { groupRef, onScroll, fixedTitle, fixedStyle, curIndex } =
+      useFixed(props);
+    const { shortcutList } = useShortcut(props);
     return {
       groupRef,
       onScroll,
       fixedTitle,
       fixedStyle,
+      curIndex,
+      shortcutList,
     };
   },
 };

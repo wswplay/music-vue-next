@@ -67,5 +67,6 @@ export default function useFixed(props) {
     onScroll,
     fixedTitle,
     fixedStyle,
+    curIndex,
   };
 }
