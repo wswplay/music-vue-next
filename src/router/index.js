@@ -17,6 +17,15 @@ const routes = [
   {
     path: "/singer",
     component: () => import(/* webpackChunkName: "singer" */ "@/views/singer"),
+    children: [
+      {
+        path: ":id",
+        component: () =>
+          import(
+            /* webpackChunkName: "singer-detail" */ "@/views/singer-detail"
+          ),
+      },
+    ],
   },
   {
     path: "/top-list",

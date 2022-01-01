@@ -4,7 +4,12 @@
       <li v-for="group in data" :key="group.title" class="group">
         <h2 class="title">{{ group.title }}</h2>
         <ul>
-          <li v-for="item in group.list" :key="item.id" class="item">
+          <li
+            v-for="item in group.list"
+            :key="item.id"
+            class="item"
+            @click="$emit('selectSinger', item)"
+          >
             <img class="avatar" v-lazy="item.pic" />
             <span class="name">{{ item.name }}</span>
           </li>
@@ -50,6 +55,7 @@ export default {
       },
     },
   },
+  emits: ["selectSinger"],
   setup(props) {
     const { groupRef, onScroll, fixedTitle, fixedStyle, curIndex } =
       useFixed(props);
