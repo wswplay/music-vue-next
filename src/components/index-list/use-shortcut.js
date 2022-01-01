@@ -1,11 +1,21 @@
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
-export default function useShortcut(props) {
+export default function useShortcut(props, groupRef) {
+  const scrollRef = ref(null);
   const shortcutList = computed(() => {
     return props.data.map((item) => item.title);
   });
 
+  function onShortcutTouchStart(e) {
+    const anchorIndex = parseInt(e.target.dataset.index);
+    const targetEl = groupRef.value.children[anchorIndex];
+    const scroll = scrollRef.value.scroll;
+    scroll.scrollToElement(targetEl, 0);
+  }
+
   return {
     shortcutList,
+    onShortcutTouchStart,
+    scrollRef,
   };
 }
