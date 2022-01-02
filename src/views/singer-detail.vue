@@ -1,20 +1,45 @@
 <template>
-  <div class="singer-detail"></div>
+  <div class="singer-detail">
+    <MusicList
+      :songs="songs"
+      :title="title"
+      :pic="pic"
+      :loading="loading"
+    ></MusicList>
+  </div>
 </template>
 
 <script>
 import { getSingerDetail } from "@/service/singer";
 import { processSongs } from "@/service/song.js";
+import MusicList from "@/components/music-list/music-list";
 
 export default {
   name: "singer-detail",
+  components: {
+    MusicList,
+  },
   props: {
     singerInfo: Object,
   },
+  data() {
+    return {
+      songs: [],
+      loading: true,
+    };
+  },
+  computed: {
+    title() {
+      return (this.singerInfo && this.singerInfo.name) || "";
+    },
+    pic() {
+      return (this.singerInfo && this.singerInfo.pic) || "";
+    },
+  },
   async created() {
     const result = await getSingerDetail(this.singerInfo);
-    const songs = await processSongs(result.songs);
-    console.log(songs);
+    this.songs = await processSongs(result.songs);
+    this.loading = false;
   },
 };
 </script>
