@@ -13,7 +13,13 @@
       </div>
       <div class="filter"></div>
     </div>
-    <scroll class="list" :style="scrollStyle" v-loading="loading">
+    <scroll
+      class="list"
+      :style="scrollStyle"
+      v-loading="loading"
+      :probe-type="3"
+      @scroll="onScroll"
+    >
       <div class="song-list-wrapper">
         <song-list :songs="songs"></song-list>
       </div>
@@ -24,6 +30,8 @@
 <script>
 import SongList from "@/components/base/song-list/song-list";
 import Scroll from "@/components/base/scroll/scroll";
+
+const RESERVED_HEIGHT = 40;
 
 export default {
   name: "music-list",
@@ -51,8 +59,30 @@ export default {
   },
   computed: {
     bgImageStyle() {
+      const scrollY = this.scrollY;
+      let zIndex = 0;
+      let paddingTop = "100%";
+      let height = 0;
+      // 兼容iPhone
+      let translateZ = 0;
+      // 图片放大功能
+      let scale = 1;
+      if (scrollY > this.maxTranslateY) {
+        zIndex = 10;
+        paddingTop = 0;
+        height = `${RESERVED_HEIGHT}px`;
+        translateZ = 1;
+      }
+      if (scrollY < 0) {
+        scale = 1 + Math.abs(scrollY / this.imageHeight);
+      }
+
       return {
+        zIndex,
+        paddingTop,
+        height,
         backgroundImage: `url(${this.pic})`,
+        transform: `scale(${scale})translateZ(${translateZ}px)`,
       };
     },
     scrollStyle() {
@@ -63,10 +93,14 @@ export default {
   },
   mounted() {
     this.imageHeight = this.$refs.bgImage.clientHeight;
+    this.maxTranslateY = this.imageHeight - RESERVED_HEIGHT;
   },
   methods: {
     goBack() {
       this.$router.back();
+    },
+    onScroll(pos) {
+      this.scrollY = -pos.y;
     },
   },
 };
@@ -107,8 +141,6 @@ export default {
     width: 100%;
     transform-origin: top;
     background-size: cover;
-    height: 0;
-    padding-top: 100%;
     .play-btn-wrapper {
       position: absolute;
       bottom: 20px;
