@@ -17,6 +17,7 @@
       class="list"
       :style="scrollStyle"
       v-loading="loading"
+      v-noResult:[noResultText]="noResult"
       :probe-type="3"
       @scroll="onScroll"
     >
@@ -49,6 +50,10 @@ export default {
     title: String,
     pic: String,
     loading: Boolean,
+    noResultText: {
+      type: String,
+      default: "毫无，歌曲",
+    },
   },
   data() {
     return {
@@ -58,6 +63,9 @@ export default {
     };
   },
   computed: {
+    noResult() {
+      return !this.loading && !this.songs.length;
+    },
     bgImageStyle() {
       const scrollY = this.scrollY;
       let zIndex = 0;
