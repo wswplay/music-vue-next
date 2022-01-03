@@ -11,7 +11,7 @@
           <span class="text">随机播放全部</span>
         </div>
       </div>
-      <div class="filter"></div>
+      <div class="filter" :style="filterStyle"></div>
     </div>
     <scroll
       class="list"
@@ -88,6 +88,17 @@ export default {
     scrollStyle() {
       return {
         top: `${this.imageHeight}px`,
+      };
+    },
+    filterStyle() {
+      let blur = 0;
+      const scrollY = this.scrollY;
+      const imgH = this.imageHeight;
+      if (scrollY >= 0) {
+        blur = Math.min(this.maxTranslateY / imgH, scrollY / imgH) * 20;
+      }
+      return {
+        backdropFilter: `blur(${blur}px)`,
       };
     },
   },
