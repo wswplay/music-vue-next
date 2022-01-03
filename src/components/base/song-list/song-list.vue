@@ -1,6 +1,11 @@
 <template>
   <ul class="song-list">
-    <li class="item" v-for="(song, index) in songs" :key="song.id">
+    <li
+      class="item"
+      v-for="(song, index) in songs"
+      :key="song.id"
+      @click="selectItem(index)"
+    >
       <div class="rank">
         <span>{{ index }}</span>
       </div>
@@ -13,6 +18,8 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
   name: "song-list",
   props: {
@@ -24,8 +31,12 @@ export default {
     },
   },
   methods: {
+    ...mapActions(["selectPlay"]),
     getDesc(song) {
       return `${song.singer}·${song.album}`;
+    },
+    selectItem(index) {
+      this.selectPlay({ list: this.songs, index });
     },
   },
 };
