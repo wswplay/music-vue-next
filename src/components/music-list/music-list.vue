@@ -5,8 +5,8 @@
     </div>
     <h1 class="title">{{ title }}</h1>
     <div class="bg-image" :style="bgImageStyle" ref="bgImage">
-      <div class="play-btn-wrapper">
-        <div class="play-btn">
+      <div class="play-btn-wrapper" v-show="songs.length" :style="playBtnStyle">
+        <div class="play-btn" @click="randomPlay(songs)">
           <i class="icon-play"></i>
           <span class="text">随机播放全部</span>
         </div>
@@ -31,6 +31,7 @@
 <script>
 import SongList from "@/components/base/song-list/song-list";
 import Scroll from "@/components/base/scroll/scroll";
+import { mapActions } from "vuex";
 
 const RESERVED_HEIGHT = 40;
 
@@ -65,6 +66,15 @@ export default {
   computed: {
     noResult() {
       return !this.loading && !this.songs.length;
+    },
+    playBtnStyle() {
+      let display = "";
+      if (this.scrollY >= this.maxTranslateY) {
+        display = "none";
+      }
+      return {
+        display,
+      };
     },
     bgImageStyle() {
       const scrollY = this.scrollY;
@@ -115,6 +125,7 @@ export default {
     this.maxTranslateY = this.imageHeight - RESERVED_HEIGHT;
   },
   methods: {
+    ...mapActions(["randomPlay"]),
     goBack() {
       this.$router.back();
     },
@@ -194,7 +205,7 @@ export default {
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(7, 17, 27, 0.4);
+      background: rgba(7, 17, 27, 0);
     }
   }
   .list {
