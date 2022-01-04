@@ -17,6 +17,9 @@ const mutations = {
   setFullScreen(state, isFull) {
     state.fullScreen = isFull;
   },
+  setFavoriteList(state, list) {
+    state.favoriteList = list;
+  },
 };
 
 export default mutations;

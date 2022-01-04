@@ -26,7 +26,10 @@
             <i @click="next" class="icon-next"></i>
           </div>
           <div class="icon i-right">
-            <i class="icon-not-favorite"></i>
+            <i
+              @click="toggleFavorite(currentSong)"
+              :class="getFavoriteIcon(currentSong)"
+            ></i>
           </div>
         </div>
       </div>
@@ -45,6 +48,7 @@ import { computed, ref } from "@vue/reactivity";
 import { useStore } from "vuex";
 import { watch } from "@vue/runtime-core";
 import useMode from "./use-mode";
+import useFavorite from "./use-favorite";
 
 export default {
   name: "player",
@@ -60,6 +64,7 @@ export default {
     const playList = computed(() => store.state.playList);
 
     const { modeIcon, changeMode } = useMode();
+    const { getFavoriteIcon, toggleFavorite } = useFavorite();
 
     const playIcon = computed(() => {
       return playing.value ? "icon-pause" : "icon-play";
@@ -153,6 +158,9 @@ export default {
       // use-mode
       modeIcon,
       changeMode,
+      // favorite
+      getFavoriteIcon,
+      toggleFavorite,
     };
   },
 };
