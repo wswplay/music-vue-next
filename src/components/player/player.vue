@@ -16,14 +16,14 @@
           <div class="icon i-left">
             <i class="icon-sequence"></i>
           </div>
-          <div class="icon i-left">
-            <i class="icon-prev"></i>
+          <div class="icon i-left" :class="disableClass">
+            <i @click="prev" class="icon-prev"></i>
           </div>
-          <div @click="togglePlay" class="icon i-center">
-            <i :class="playIcon"></i>
+          <div class="icon i-center" :class="disableClass">
+            <i @click="togglePlay" :class="playIcon"></i>
           </div>
-          <div class="icon i-right">
-            <i class="icon-next"></i>
+          <div class="icon i-right" :class="disableClass">
+            <i @click="next" class="icon-next"></i>
           </div>
           <div class="icon i-right">
             <i class="icon-not-favorite"></i>
@@ -31,7 +31,12 @@
         </div>
       </div>
     </div>
-    <audio ref="audioRef" @pause="pause"></audio>
+    <audio
+      ref="audioRef"
+      @pause="pause"
+      @canplay="readyPlay"
+      @error="error"
+    ></audio>
   </div>
 </template>
 
@@ -44,22 +49,31 @@ export default {
   name: "player",
   setup() {
     const audioRef = ref(null);
+    let isReady = ref(false);
 
     const store = useStore();
     const fullScreen = computed(() => store.state.fullScreen);
     const currentSong = computed(() => store.getters.currentSong);
     const playing = computed(() => store.state.playing);
+    const curIndex = computed(() => store.state.curIndex);
+    const playList = computed(() => store.state.playList);
+
     const playIcon = computed(() => {
       return playing.value ? "icon-pause" : "icon-play";
+    });
+    const disableClass = computed(() => {
+      return isReady.value ? "" : "disable";
     });
 
     watch(currentSong, (newSong) => {
       if (!newSong.id || !newSong.url) return;
+      isReady.value = false;
       const audioEl = audioRef.value;
       audioEl.src = newSong.url;
       audioEl.play();
     });
     watch(playing, (newPlaying) => {
+      if (!isReady.value) return;
       const audioEl = audioRef.value;
       newPlaying ? audioEl.play() : audioEl.pause();
     });
@@ -68,10 +82,55 @@ export default {
       store.commit("setFullScreen", false);
     }
     function togglePlay() {
+      if (!isReady.value) return;
       store.commit("setPlayingState", !playing.value);
     }
     function pause() {
       store.commit("setPlayingState", false);
+    }
+    function prev() {
+      const listLen = playList.value.length;
+      if (!isReady.value || !listLen) return;
+      if (listLen === 1) {
+        loop();
+      } else {
+        let index = curIndex.value - 1;
+        if (index === -1) {
+          index = listLen - 1;
+        }
+        store.commit("setCurIndex", index);
+        if (!playing.value) {
+          store.commit("setPlayingState", true);
+        }
+      }
+    }
+    function next() {
+      const listLen = playList.value.length;
+      if (!isReady.value || !listLen) return;
+      if (listLen === 1) {
+        loop();
+      } else {
+        let index = curIndex.value + 1;
+        if (index === listLen) {
+          index = 0;
+        }
+        store.commit("setCurIndex", index);
+        if (!playing.value) {
+          store.commit("setPlayingState", true);
+        }
+      }
+    }
+    function loop() {
+      const audioEl = audioRef.value;
+      audioEl.currentTime = 0;
+      audioEl.play();
+    }
+    function readyPlay() {
+      if (isReady.value) return;
+      isReady.value = true;
+    }
+    function error() {
+      isReady.value = true;
     }
 
     return {
@@ -79,9 +138,15 @@ export default {
       fullScreen,
       currentSong,
       playIcon,
+      isReady,
+      disableClass,
       goBack,
       togglePlay,
       pause,
+      prev,
+      next,
+      readyPlay,
+      error,
     };
   },
 };
@@ -105,7 +170,7 @@ export default {
       height: 100%;
       z-index: -1;
       opacity: 0.6;
-      filter: blur(20px);
+      filter: blur(1px);
       img {
         width: 100%;
         height: 100%;
