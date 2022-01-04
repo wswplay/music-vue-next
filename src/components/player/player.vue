@@ -14,7 +14,7 @@
       <div class="bottom">
         <div class="operators">
           <div class="icon i-left">
-            <i class="icon-sequence"></i>
+            <i @click="changeMode" :class="modeIcon"></i>
           </div>
           <div class="icon i-left" :class="disableClass">
             <i @click="prev" class="icon-prev"></i>
@@ -44,6 +44,7 @@
 import { computed, ref } from "@vue/reactivity";
 import { useStore } from "vuex";
 import { watch } from "@vue/runtime-core";
+import useMode from "./use-mode";
 
 export default {
   name: "player",
@@ -57,6 +58,8 @@ export default {
     const playing = computed(() => store.state.playing);
     const curIndex = computed(() => store.state.curIndex);
     const playList = computed(() => store.state.playList);
+
+    const { modeIcon, changeMode } = useMode();
 
     const playIcon = computed(() => {
       return playing.value ? "icon-pause" : "icon-play";
@@ -147,6 +150,9 @@ export default {
       next,
       readyPlay,
       error,
+      // use-mode
+      modeIcon,
+      changeMode,
     };
   },
 };
