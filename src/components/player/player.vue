@@ -12,6 +12,15 @@
         <h2 class="subtitle">{{ currentSong.singer }}</h2>
       </div>
       <div class="bottom">
+        <div class="progress-wrapper">
+          <span class="time time-l">{{ formateTime(currentTime) }}</span>
+          <div class="progress-bar-wrapper">
+            <ProgressBar :progress="progress"></ProgressBar>
+          </div>
+          <span class="time time-r">{{
+            formateTime(currentSong.duration)
+          }}</span>
+        </div>
         <div class="operators">
           <div class="icon i-left">
             <i @click="changeMode" :class="modeIcon"></i>
@@ -39,6 +48,7 @@
       @pause="pause"
       @canplay="readyPlay"
       @error="error"
+      @timeupdate="updateTime"
     ></audio>
   </div>
 </template>
@@ -49,12 +59,16 @@ import { useStore } from "vuex";
 import { watch } from "@vue/runtime-core";
 import useMode from "./use-mode";
 import useFavorite from "./use-favorite";
+import ProgressBar from "./progress-bar";
+import { formateTime } from "@/assets/js/util";
 
 export default {
   name: "player",
+  components: { ProgressBar },
   setup() {
     const audioRef = ref(null);
     let isReady = ref(false);
+    const currentTime = ref(0);
 
     const store = useStore();
     const fullScreen = computed(() => store.state.fullScreen);
@@ -72,9 +86,13 @@ export default {
     const disableClass = computed(() => {
       return isReady.value ? "" : "disable";
     });
+    const progress = computed(() => {
+      return currentTime.value / currentSong.value.duration;
+    });
 
     watch(currentSong, (newSong) => {
       if (!newSong.id || !newSong.url) return;
+      currentTime.value = 0;
       isReady.value = false;
       const audioEl = audioRef.value;
       audioEl.src = newSong.url;
@@ -140,6 +158,9 @@ export default {
     function error() {
       isReady.value = true;
     }
+    function updateTime(e) {
+      currentTime.value = e.target.currentTime;
+    }
 
     return {
       audioRef,
@@ -148,6 +169,9 @@ export default {
       playIcon,
       isReady,
       disableClass,
+      currentTime,
+      progress,
+      // method
       goBack,
       togglePlay,
       pause,
@@ -161,6 +185,8 @@ export default {
       // favorite
       getFavoriteIcon,
       toggleFavorite,
+      updateTime,
+      formateTime,
     };
   },
 };

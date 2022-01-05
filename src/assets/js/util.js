@@ -17,3 +17,11 @@ export function swap(list, i, j) {
   list[i] = list[j];
   list[j] = t;
 }
+
+export function formateTime(time) {
+  // 向下取整
+  time = time | 0;
+  const minute = (((time / 60) | 0) + "").padStart(2, 0);
+  const second = ((time % 60) + "").padStart(2, 0);
+  return `${minute}:${second}`;
+}
