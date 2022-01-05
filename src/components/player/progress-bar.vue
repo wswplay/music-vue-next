@@ -1,8 +1,14 @@
 <template>
-  <div class="progress-bar">
+  <div class="progress-bar" @click="progressClick">
     <div class="bar-inner">
-      <div class="progress" :style="progressStyle"></div>
-      <div class="progress-btn-wrapper" :style="btnStyle">
+      <div class="progress" :style="progressStyle" ref="progress"></div>
+      <div
+        class="progress-btn-wrapper"
+        :style="btnStyle"
+        @touchstart.prevent="onTouchStart"
+        @touchmove.prevent="onTouchMove"
+        @touchend.prevent="onTouchEnd"
+      >
         <div class="progress-btn"></div>
       </div>
     </div>
@@ -20,6 +26,7 @@ export default {
       defaule: 0,
     },
   },
+  emits: ["progressMove", "progressEnd"],
   data() {
     return {
       offset: 0,
@@ -39,7 +46,35 @@ export default {
       this.offset = barWidth * newVal;
     },
   },
-  methods: {},
+  created() {
+    this.touch = {};
+  },
+  methods: {
+    onTouchStart(e) {
+      this.touch.x1 = e.touches[0].pageX;
+      this.touch.beginWidth = this.$refs.progress.clientWidth;
+    },
+    onTouchMove(e) {
+      const distance = e.touches[0].pageX - this.touch.x1;
+      const tempWidth = this.touch.beginWidth + distance;
+      const barWidth = this.$el.clientWidth - processBtnWidth;
+      const progress = Math.min(1, Math.max(tempWidth / barWidth, 0));
+      this.offset = barWidth * progress;
+      this.$emit("progressMove", progress);
+    },
+    onTouchEnd() {
+      const barWidth = this.$el.clientWidth - processBtnWidth;
+      const progress = this.$refs.progress.clientWidth / barWidth;
+      this.$emit("progressEnd", progress);
+    },
+    progressClick(e) {
+      const rect = this.$el.getBoundingClientRect();
+      const offsetWidth = e.pageX - rect.left;
+      const barWidth = this.$el.clientWidth - processBtnWidth;
+      const progress = offsetWidth / barWidth;
+      this.$emit("progressEnd", progress);
+    },
+  },
 };
 </script>
 

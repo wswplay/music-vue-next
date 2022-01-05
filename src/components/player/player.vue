@@ -15,7 +15,11 @@
         <div class="progress-wrapper">
           <span class="time time-l">{{ formateTime(currentTime) }}</span>
           <div class="progress-bar-wrapper">
-            <ProgressBar :progress="progress"></ProgressBar>
+            <ProgressBar
+              :progress="progress"
+              @progressMove="progressMove"
+              @progressEnd="progressEnd"
+            ></ProgressBar>
           </div>
           <span class="time time-r">{{
             formateTime(currentSong.duration)
@@ -49,6 +53,7 @@
       @canplay="readyPlay"
       @error="error"
       @timeupdate="updateTime"
+      @ended="endPlay"
     ></audio>
   </div>
 </template>
@@ -61,6 +66,7 @@ import useMode from "./use-mode";
 import useFavorite from "./use-favorite";
 import ProgressBar from "./progress-bar";
 import { formateTime } from "@/assets/js/util";
+import { PLAY_MODE } from "@/assets/js/constant";
 
 export default {
   name: "player",
@@ -69,6 +75,7 @@ export default {
     const audioRef = ref(null);
     let isReady = ref(false);
     const currentTime = ref(0);
+    let progressChanging = false;
 
     const store = useStore();
     const fullScreen = computed(() => store.state.fullScreen);
@@ -76,6 +83,7 @@ export default {
     const playing = computed(() => store.state.playing);
     const curIndex = computed(() => store.state.curIndex);
     const playList = computed(() => store.state.playList);
+    const playMode = computed(() => store.state.playMode);
 
     const { modeIcon, changeMode } = useMode();
     const { getFavoriteIcon, toggleFavorite } = useFavorite();
@@ -150,6 +158,7 @@ export default {
       const audioEl = audioRef.value;
       audioEl.currentTime = 0;
       audioEl.play();
+      store.commit("setPlayingState", true);
     }
     function readyPlay() {
       if (isReady.value) return;
@@ -159,7 +168,28 @@ export default {
       isReady.value = true;
     }
     function updateTime(e) {
+      if (progressChanging) return;
       currentTime.value = e.target.currentTime;
+    }
+    function progressMove(rate) {
+      progressChanging = true;
+      currentTime.value = currentSong.value.duration * rate;
+    }
+    function progressEnd(rate) {
+      progressChanging = false;
+      audioRef.value.currentTime = currentTime.value =
+        currentSong.value.duration * rate;
+      if (!playing.value) {
+        store.commit("setPlayingState", true);
+      }
+    }
+    function endPlay() {
+      currentTime.value = 0;
+      if (playMode.value === PLAY_MODE.loop) {
+        loop();
+      } else {
+        next();
+      }
     }
 
     return {
@@ -187,6 +217,9 @@ export default {
       toggleFavorite,
       updateTime,
       formateTime,
+      progressMove,
+      progressEnd,
+      endPlay,
     };
   },
 };
