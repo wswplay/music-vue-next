@@ -10,12 +10,16 @@ export default function useLyric({ isReady, currentTime }) {
   const currentLineNum = ref(0);
   const lyricScrollRef = ref(null);
   const lyricListRef = ref(null);
+  const pureMusicLyric = ref("");
+  const playingLyric = ref("");
 
   watch(currentSong, async (val) => {
     if (!val.url || !val.id) return;
     stopLyric();
     currentLyric.value = null;
     currentLineNum.value = 0;
+    pureMusicLyric.value = "";
+    playingLyric.value = "";
 
     const lyric = await getLyric(val);
     store.commit("addSongLyric", {
@@ -25,7 +29,15 @@ export default function useLyric({ isReady, currentTime }) {
     if (currentSong.value.lyric !== lyric) return;
 
     currentLyric.value = new Lyric(lyric, handleLyric);
-    if (isReady.value) playLyric();
+    const hasLyric = currentLyric.value.lines.length;
+    if (hasLyric) {
+      if (isReady.value) playLyric();
+    } else {
+      playingLyric.value = pureMusicLyric.value = lyric.replace(
+        /\[(\d{2}):(\d{2}):(\d{2})\]/g,
+        ""
+      );
+    }
   });
 
   function playLyric() {
@@ -40,9 +52,12 @@ export default function useLyric({ isReady, currentTime }) {
       currentLyricVal.stop();
     }
   }
-  function handleLyric({ lineNum }) {
+  function handleLyric({ lineNum, txt }) {
     const scrollFlag = 5;
+
     currentLineNum.value = lineNum;
+    playingLyric.value = txt;
+
     const scrollComp = lyricScrollRef.value;
     const listEl = lyricListRef.value;
 
@@ -62,5 +77,7 @@ export default function useLyric({ isReady, currentTime }) {
     lyricListRef,
     playLyric,
     stopLyric,
+    pureMusicLyric,
+    playingLyric,
   };
 }

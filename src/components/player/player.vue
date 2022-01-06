@@ -12,7 +12,7 @@
         <h2 class="subtitle">{{ currentSong.singer }}</h2>
       </div>
       <div class="middle">
-        <div class="middle-l" v-show="false">
+        <div class="middle-l" v-show="true">
           <div ref="cdWrapperRef" class="cd-wrapper">
             <div ref="cdRef" class="cd">
               <img
@@ -22,6 +22,9 @@
                 :src="currentSong.pic"
               />
             </div>
+          </div>
+          <div class="playing-lyric-wrapper">
+            <div class="playing-lyric">{{ playingLyric }}</div>
           </div>
         </div>
         <scroll class="middle-r" ref="lyricScrollRef">
@@ -35,6 +38,9 @@
               >
                 {{ line.txt }}
               </p>
+            </div>
+            <div class="pure-music" v-show="pureMusicLyric">
+              <p>{{ pureMusicLyric }}</p>
             </div>
           </div>
         </scroll>
@@ -126,6 +132,8 @@ export default {
       lyricListRef,
       playLyric,
       stopLyric,
+      pureMusicLyric,
+      playingLyric,
     } = useLyric({
       isReady,
       currentTime,
@@ -282,6 +290,8 @@ export default {
       currentLineNum,
       lyricScrollRef,
       lyricListRef,
+      pureMusicLyric,
+      playingLyric,
     };
   },
 };
