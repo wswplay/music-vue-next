@@ -79,6 +79,7 @@ import { watch } from "@vue/runtime-core";
 import useMode from "./use-mode";
 import useFavorite from "./use-favorite";
 import useCD from "./use-cd";
+import useLyric from "./use-lyric";
 import ProgressBar from "./progress-bar";
 import { formateTime } from "@/assets/js/util";
 import { PLAY_MODE } from "@/assets/js/constant";
@@ -103,6 +104,7 @@ export default {
     const { modeIcon, changeMode } = useMode();
     const { getFavoriteIcon, toggleFavorite } = useFavorite();
     const { cdClass, cdRef, cdImageRef } = useCD();
+    useLyric();
 
     const playIcon = computed(() => {
       return playing.value ? "icon-pause" : "icon-play";

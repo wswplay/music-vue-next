@@ -14,3 +14,19 @@ export function processSongs(songs) {
       .filter((item) => item.url.indexOf("vkey") > -1);
   });
 }
+
+let lyricMap = {};
+export function getLyric(song) {
+  // 如有缓存，则直接返回缓存，不发送新的请求
+  if (song.lyric) return Promise.resolve(song.lyric);
+  // 如map有数据，则直接返回map数据
+  const mid = song.mid;
+  const lyric = lyricMap[mid];
+  if (lyric) return Promise.resolve(lyric);
+  // 请求服务端
+  return get("/api/getLyric", { mid }).then((result) => {
+    const lyric = result ? result.lyric : "[00:00:00]毫无歌词介个";
+    lyricMap[mid] = lyric;
+    return lyric;
+  });
+}
