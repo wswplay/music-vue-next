@@ -12,7 +12,7 @@
         <h2 class="subtitle">{{ currentSong.singer }}</h2>
       </div>
       <div class="middle">
-        <div class="middle-l">
+        <div class="middle-l" v-show="false">
           <div ref="cdWrapperRef" class="cd-wrapper">
             <div ref="cdRef" class="cd">
               <img
@@ -24,6 +24,20 @@
             </div>
           </div>
         </div>
+        <scroll class="middle-r" ref="lyricScrollRef">
+          <div class="lyric-wrapper">
+            <div v-if="currentLyric" ref="lyricListRef">
+              <p
+                class="text"
+                :class="{ current: currentLineNum === index }"
+                v-for="(line, index) in currentLyric.lines"
+                :key="line.num"
+              >
+                {{ line.txt }}
+              </p>
+            </div>
+          </div>
+        </scroll>
       </div>
       <div class="bottom">
         <div class="progress-wrapper">
@@ -81,12 +95,13 @@ import useFavorite from "./use-favorite";
 import useCD from "./use-cd";
 import useLyric from "./use-lyric";
 import ProgressBar from "./progress-bar";
+import Scroll from "@/components/base/scroll/scroll";
 import { formateTime } from "@/assets/js/util";
 import { PLAY_MODE } from "@/assets/js/constant";
 
 export default {
   name: "player",
-  components: { ProgressBar },
+  components: { ProgressBar, Scroll },
   setup() {
     const audioRef = ref(null);
     let isReady = ref(false);
@@ -104,7 +119,17 @@ export default {
     const { modeIcon, changeMode } = useMode();
     const { getFavoriteIcon, toggleFavorite } = useFavorite();
     const { cdClass, cdRef, cdImageRef } = useCD();
-    useLyric();
+    const {
+      currentLyric,
+      currentLineNum,
+      lyricScrollRef,
+      lyricListRef,
+      playLyric,
+      stopLyric,
+    } = useLyric({
+      isReady,
+      currentTime,
+    });
 
     const playIcon = computed(() => {
       return playing.value ? "icon-pause" : "icon-play";
@@ -127,7 +152,13 @@ export default {
     watch(playing, (newPlaying) => {
       if (!isReady.value) return;
       const audioEl = audioRef.value;
-      newPlaying ? audioEl.play() : audioEl.pause();
+      if (newPlaying) {
+        audioEl.play();
+        playLyric();
+      } else {
+        audioEl.pause();
+        stopLyric();
+      }
     });
 
     function goBack() {
@@ -181,6 +212,7 @@ export default {
     function readyPlay() {
       if (isReady.value) return;
       isReady.value = true;
+      playLyric();
     }
     function error() {
       isReady.value = true;
@@ -192,6 +224,8 @@ export default {
     function progressMove(rate) {
       progressChanging = true;
       currentTime.value = currentSong.value.duration * rate;
+      playLyric();
+      stopLyric();
     }
     function progressEnd(rate) {
       progressChanging = false;
@@ -200,6 +234,7 @@ export default {
       if (!playing.value) {
         store.commit("setPlayingState", true);
       }
+      playLyric();
     }
     function endPlay() {
       currentTime.value = 0;
@@ -242,6 +277,11 @@ export default {
       cdClass,
       cdRef,
       cdImageRef,
+      // lyric
+      currentLyric,
+      currentLineNum,
+      lyricScrollRef,
+      lyricListRef,
     };
   },
 };
