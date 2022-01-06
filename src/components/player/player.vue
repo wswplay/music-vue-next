@@ -11,6 +11,20 @@
         <h1 class="title">{{ currentSong.name }}</h1>
         <h2 class="subtitle">{{ currentSong.singer }}</h2>
       </div>
+      <div class="middle">
+        <div class="middle-l">
+          <div ref="cdWrapperRef" class="cd-wrapper">
+            <div ref="cdRef" class="cd">
+              <img
+                ref="cdImageRef"
+                class="image"
+                :class="cdClass"
+                :src="currentSong.pic"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="bottom">
         <div class="progress-wrapper">
           <span class="time time-l">{{ formateTime(currentTime) }}</span>
@@ -64,6 +78,7 @@ import { useStore } from "vuex";
 import { watch } from "@vue/runtime-core";
 import useMode from "./use-mode";
 import useFavorite from "./use-favorite";
+import useCD from "./use-cd";
 import ProgressBar from "./progress-bar";
 import { formateTime } from "@/assets/js/util";
 import { PLAY_MODE } from "@/assets/js/constant";
@@ -87,6 +102,7 @@ export default {
 
     const { modeIcon, changeMode } = useMode();
     const { getFavoriteIcon, toggleFavorite } = useFavorite();
+    const { cdClass, cdRef, cdImageRef } = useCD();
 
     const playIcon = computed(() => {
       return playing.value ? "icon-pause" : "icon-play";
@@ -220,6 +236,10 @@ export default {
       progressMove,
       progressEnd,
       endPlay,
+      // cd
+      cdClass,
+      cdRef,
+      cdImageRef,
     };
   },
 };
@@ -243,7 +263,7 @@ export default {
       height: 100%;
       z-index: -1;
       opacity: 0.6;
-      filter: blur(1px);
+      filter: blur(20px);
       img {
         width: 100%;
         height: 100%;
