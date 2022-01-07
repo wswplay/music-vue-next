@@ -11,8 +11,13 @@
         <h1 class="title">{{ currentSong.name }}</h1>
         <h2 class="subtitle">{{ currentSong.singer }}</h2>
       </div>
-      <div class="middle">
-        <div class="middle-l" v-show="true">
+      <div
+        class="middle"
+        @touchstart="onMiddleTouchStart"
+        @touchmove="onMiddleTouchMove"
+        @touchend="onMiddleTouchEnd"
+      >
+        <div class="middle-l" :style="middleLstyle">
           <div ref="cdWrapperRef" class="cd-wrapper">
             <div ref="cdRef" class="cd">
               <img
@@ -27,7 +32,7 @@
             <div class="playing-lyric">{{ playingLyric }}</div>
           </div>
         </div>
-        <scroll class="middle-r" ref="lyricScrollRef">
+        <scroll class="middle-r" ref="lyricScrollRef" :style="middleRstyle">
           <div class="lyric-wrapper">
             <div v-if="currentLyric" ref="lyricListRef">
               <p
@@ -46,6 +51,10 @@
         </scroll>
       </div>
       <div class="bottom">
+        <div class="dot-wrapper">
+          <span class="dot" :class="{ active: currentShow === 'cd' }"></span>
+          <span class="dot" :class="{ active: currentShow === 'lyric' }"></span>
+        </div>
         <div class="progress-wrapper">
           <span class="time time-l">{{ formateTime(currentTime) }}</span>
           <div class="progress-bar-wrapper">
@@ -100,6 +109,7 @@ import useMode from "./use-mode";
 import useFavorite from "./use-favorite";
 import useCD from "./use-cd";
 import useLyric from "./use-lyric";
+import useMiddleInteractive from "./use-middle-interactive";
 import ProgressBar from "./progress-bar";
 import Scroll from "@/components/base/scroll/scroll";
 import { formateTime } from "@/assets/js/util";
@@ -138,6 +148,14 @@ export default {
       isReady,
       currentTime,
     });
+    const {
+      currentShow,
+      middleLstyle,
+      middleRstyle,
+      onMiddleTouchStart,
+      onMiddleTouchMove,
+      onMiddleTouchEnd,
+    } = useMiddleInteractive();
 
     const playIcon = computed(() => {
       return playing.value ? "icon-pause" : "icon-play";
@@ -292,6 +310,13 @@ export default {
       lyricListRef,
       pureMusicLyric,
       playingLyric,
+      // middle
+      currentShow,
+      middleLstyle,
+      middleRstyle,
+      onMiddleTouchStart,
+      onMiddleTouchMove,
+      onMiddleTouchEnd,
     };
   },
 };
