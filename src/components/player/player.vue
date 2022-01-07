@@ -1,5 +1,5 @@
 <template>
-  <div class="player">
+  <div class="player" v-show="playList.length">
     <div class="normal-player" v-show="fullScreen">
       <div class="background">
         <img :src="currentSong.pic" />
@@ -90,6 +90,7 @@
         </div>
       </div>
     </div>
+    <MiniPlayer></MiniPlayer>
     <audio
       ref="audioRef"
       @pause="pause"
@@ -112,12 +113,13 @@ import useLyric from "./use-lyric";
 import useMiddleInteractive from "./use-middle-interactive";
 import ProgressBar from "./progress-bar";
 import Scroll from "@/components/base/scroll/scroll";
+import MiniPlayer from "./mini-player.vue";
 import { formateTime } from "@/assets/js/util";
 import { PLAY_MODE } from "@/assets/js/constant";
 
 export default {
   name: "player",
-  components: { ProgressBar, Scroll },
+  components: { ProgressBar, Scroll, MiniPlayer },
   setup() {
     const audioRef = ref(null);
     let isReady = ref(false);
@@ -275,6 +277,7 @@ export default {
       audioRef,
       fullScreen,
       currentSong,
+      playList,
       playIcon,
       isReady,
       disableClass,
