@@ -16,6 +16,15 @@
         <h2 class="name">{{ currentSong.name }}</h2>
         <p class="desc">{{ currentSong.singer }}</p>
       </div>
+      <div class="control">
+        <ProgressCircle :radius="32" :progress="progress">
+          <i
+            class="icon-mini"
+            :class="miniPlayIcon"
+            @click.stop="togglePlay"
+          ></i>
+        </ProgressCircle>
+      </div>
     </div>
   </transition>
 </template>
@@ -24,13 +33,19 @@
 import { computed } from "@vue/reactivity";
 import { useStore } from "vuex";
 import useCD from "./use-cd";
+import ProgressCircle from "./progress-circle";
 
 export default {
   name: "mini-player",
+  components: { ProgressCircle },
+  props: ["progress", "togglePlay"],
   setup() {
     const store = useStore();
     const fullScreen = computed(() => store.state.fullScreen);
     const currentSong = computed(() => store.getters.currentSong);
+    const miniPlayIcon = computed(() =>
+      store.state.playing ? "icon-pause-mini" : "icon-play-mini"
+    );
 
     const { cdRef, cdClass, cdImageRef } = useCD();
 
@@ -42,6 +57,7 @@ export default {
       fullScreen,
       currentSong,
       shouNormalPlayer,
+      miniPlayIcon,
       // cd
       cdRef,
       cdClass,

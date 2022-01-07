@@ -59,6 +59,7 @@
           <span class="time time-l">{{ formateTime(currentTime) }}</span>
           <div class="progress-bar-wrapper">
             <ProgressBar
+              ref="barRef"
               :progress="progress"
               @progressMove="progressMove"
               @progressEnd="progressEnd"
@@ -90,7 +91,7 @@
         </div>
       </div>
     </div>
-    <MiniPlayer></MiniPlayer>
+    <MiniPlayer :progress="progress" :togglePlay="togglePlay"></MiniPlayer>
     <audio
       ref="audioRef"
       @pause="pause"
@@ -105,7 +106,7 @@
 <script>
 import { computed, ref } from "@vue/reactivity";
 import { useStore } from "vuex";
-import { watch } from "@vue/runtime-core";
+import { nextTick, watch } from "@vue/runtime-core";
 import useMode from "./use-mode";
 import useFavorite from "./use-favorite";
 import useCD from "./use-cd";
@@ -122,6 +123,7 @@ export default {
   components: { ProgressBar, Scroll, MiniPlayer },
   setup() {
     const audioRef = ref(null);
+    const barRef = ref(null);
     let isReady = ref(false);
     const currentTime = ref(0);
     let progressChanging = false;
@@ -186,6 +188,12 @@ export default {
       } else {
         audioEl.pause();
         stopLyric();
+      }
+    });
+    watch(fullScreen, async(val) => {
+      if (val) {
+        await nextTick();
+        barRef.value.setOffset();
       }
     });
 
@@ -275,6 +283,7 @@ export default {
 
     return {
       audioRef,
+      barRef,
       fullScreen,
       currentSong,
       playList,

@@ -42,8 +42,7 @@ export default {
   },
   watch: {
     progress(newVal) {
-      const barWidth = this.$el.clientWidth - processBtnWidth;
-      this.offset = barWidth * newVal;
+      this.setOffset(newVal);
     },
   },
   created() {
@@ -73,6 +72,10 @@ export default {
       const barWidth = this.$el.clientWidth - processBtnWidth;
       const progress = offsetWidth / barWidth;
       this.$emit("progressEnd", progress);
+    },
+    setOffset(progress) {
+      const barWidth = this.$el.clientWidth - processBtnWidth;
+      this.offset = barWidth * progress;
     },
   },
 };
