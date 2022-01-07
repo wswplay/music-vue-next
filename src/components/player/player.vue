@@ -190,7 +190,7 @@ export default {
         stopLyric();
       }
     });
-    watch(fullScreen, async(val) => {
+    watch(fullScreen, async (val) => {
       if (val) {
         await nextTick();
         barRef.value.setOffset();
