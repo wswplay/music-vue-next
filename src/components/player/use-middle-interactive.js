@@ -10,13 +10,24 @@ export default function useMiddleInteractive() {
 
   function onMiddleTouchStart(e) {
     touch.startX = e.touches[0].pageX;
+    touch.startY = e.touches[0].pageY;
+    touch.directionLocked = "";
   }
   function onMiddleTouchMove(e) {
-    const distance = e.touches[0].pageX - touch.startX;
+    const distanceX = e.touches[0].pageX - touch.startX;
+    const distanceY = e.touches[0].pageY - touch.startY;
+
+    const absDistX = Math.abs(distanceX);
+    const absDistY = Math.abs(distanceY);
+    if (!touch.directionLocked) {
+      touch.directionLocked = absDistX >= absDistY ? "h" : "v";
+    }
+    if (touch.directionLocked === "v") return;
+
     const left = currentView === "cd" ? 0 : -window.innerWidth;
     const offsetWidth = Math.min(
       0,
-      Math.max(-window.innerWidth, left + distance)
+      Math.max(-window.innerWidth, left + distanceX)
     );
     touch.percent = Math.abs(offsetWidth / window.innerWidth);
     if (currentView === "cd") {
@@ -34,11 +45,9 @@ export default function useMiddleInteractive() {
     }
     middleLstyle.value = {
       opacity: 1 - touch.percent,
-      transitionDuration: "0ms",
     };
     middleRstyle.value = {
       transform: `translate3d(${offsetWidth}px, 0, 0)`,
-      transitionDuration: "0ms",
     };
   }
   function onMiddleTouchEnd() {
