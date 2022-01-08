@@ -207,7 +207,7 @@ export default {
     watch(fullScreen, async (val) => {
       if (val) {
         await nextTick();
-        barRef.value.setOffset();
+        barRef.value.setOffset(progress.value);
       }
     });
 
