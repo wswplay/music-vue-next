@@ -30,3 +30,27 @@ export function changeMode({ commit, state, getters }, mode) {
   commit("setCurIndex", index);
   commit("setPlayMode", mode);
 }
+
+export function removeSong({ commit, state }, song) {
+  let sequenceList = state.sequenceList.slice();
+  let playList = state.playList.slice();
+
+  const sequenceIndex = findItemIndex(sequenceList, song);
+  const playIndex = findItemIndex(playList, song);
+
+  sequenceList.splice(sequenceIndex, 1);
+  playList.splice(playIndex, 1);
+
+  let curIndex = state.curIndex;
+  if (playIndex < curIndex || curIndex === playList.length) {
+    curIndex--;
+  }
+
+  commit("setSequenceList", sequenceList);
+  commit("setPlayList", playList);
+  commit("setCurIndex", curIndex);
+}
+
+function findItemIndex(list, item) {
+  return list.findIndex((sit) => sit.id === item.id);
+}

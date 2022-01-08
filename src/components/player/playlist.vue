@@ -13,7 +13,7 @@
             </h1>
           </div>
           <scroll ref="scrollRef" class="list-content">
-            <ul ref="listRef">
+            <transition-group ref="listRef" name="list" tag="ul">
               <li
                 class="item"
                 v-for="song in sequenceList"
@@ -25,11 +25,11 @@
                 <span class="favorite" @click.stop="toggleFavorite(song)">
                   <i :class="getFavoriteIcon(song)"></i>
                 </span>
-                <span class="delete">
+                <span class="delete" @click.stop="removeSong(song)">
                   <i class="icon-delete"></i>
                 </span>
               </li>
-            </ul>
+            </transition-group>
           </scroll>
           <div class="list-add">
             <div class="add">
@@ -99,13 +99,17 @@ export default {
       const index = sequenceList.value.findIndex(
         (item) => item.id === currentSong.value.id
       );
-      const target = listRef.value.children[index];
+      // 组件的dom元素在$el上
+      const target = listRef.value.$el.children[index];
       scrollRef.value.scroll.scrollToElement(target, 300);
     }
     function selectSong(song) {
       const index = playlist.value.findIndex((item) => item.id === song.id);
       store.commit("setCurIndex", index);
       store.commit("setPlayingState", true);
+    }
+    function removeSong(song) {
+      store.dispatch("removeSong", song);
     }
 
     return {
@@ -118,6 +122,7 @@ export default {
       hide,
       getCurrentIcon,
       selectSong,
+      removeSong,
       // 组合api
       modeIcon,
       modeText,
