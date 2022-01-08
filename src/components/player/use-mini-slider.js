@@ -48,8 +48,8 @@ export default function useMiniSlider() {
         sliderVal.goToPage(val, 0, 0);
       }
     });
-    watch(playList, async () => {
-      if (sliderVal && sliderShow.value) {
+    watch(playList, async (val) => {
+      if (sliderVal && sliderShow.value && val.length) {
         await nextTick();
         sliderVal.refresh();
       }

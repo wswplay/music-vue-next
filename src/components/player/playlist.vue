@@ -7,7 +7,7 @@
             <h1 class="title">
               <i class="icon" :class="modeIcon" @click="changeMode"> </i>
               <span class="text">{{ modeText }}</span>
-              <span class="clear">
+              <span class="clear" @click="showConfirm">
                 <i class="icon-clear"></i>
               </span>
             </h1>
@@ -44,6 +44,12 @@
           <div class="list-footer" @click="hide">
             <span>关闭</span>
           </div>
+          <Confirm
+            ref="confirmRef"
+            text="清无赦"
+            confirm-btn-text="清空"
+            @confirm="confirmClear"
+          ></Confirm>
         </div>
       </div>
     </transition>
@@ -52,6 +58,7 @@
 
 <script>
 import Scroll from "@/components/base/scroll/scroll";
+import Confirm from "@/components/base/confirm/confirm";
 import { computed, ref } from "@vue/reactivity";
 import { useStore } from "vuex";
 import useMode from "./use-mode";
@@ -60,10 +67,11 @@ import { nextTick, watch } from "@vue/runtime-core";
 
 export default {
   name: "playlist",
-  components: { Scroll },
+  components: { Scroll, Confirm },
   setup() {
     const scrollRef = ref(null);
     const listRef = ref(null);
+    const confirmRef = ref(null);
     let visible = ref(false);
     let removing = ref(false);
 
@@ -119,9 +127,18 @@ export default {
 
       removing.value = true;
       store.dispatch("removeSong", song);
+      if (!playlist.value.length) hide();
+
       setTimeout(() => {
         removing.value = false;
       }, 300);
+    }
+    function showConfirm() {
+      confirmRef.value.show();
+    }
+    function confirmClear() {
+      store.dispatch("clearSongList");
+      hide();
     }
 
     return {
@@ -136,6 +153,9 @@ export default {
       selectSong,
       removeSong,
       removing,
+      confirmRef,
+      showConfirm,
+      confirmClear,
       // 组合api
       modeIcon,
       modeText,
