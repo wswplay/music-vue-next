@@ -25,7 +25,11 @@
                 <span class="favorite" @click.stop="toggleFavorite(song)">
                   <i :class="getFavoriteIcon(song)"></i>
                 </span>
-                <span class="delete" @click.stop="removeSong(song)">
+                <span
+                  class="delete"
+                  :class="{ disable: removing }"
+                  @click.stop="removeSong(song)"
+                >
                   <i class="icon-delete"></i>
                 </span>
               </li>
@@ -58,9 +62,10 @@ export default {
   name: "playlist",
   components: { Scroll },
   setup() {
-    let visible = ref(false);
     const scrollRef = ref(null);
     const listRef = ref(null);
+    let visible = ref(false);
+    let removing = ref(false);
 
     const store = useStore();
     const playlist = computed(() => store.state.playList);
@@ -70,8 +75,8 @@ export default {
     const { modeIcon, changeMode, modeText } = useMode();
     const { getFavoriteIcon, toggleFavorite } = useFavorite();
 
-    watch(currentSong, async () => {
-      if (!visible.value) return;
+    watch(currentSong, async (val) => {
+      if (!visible.value || !val.id) return;
 
       await nextTick();
       scrollToCurrentSong();
@@ -99,6 +104,7 @@ export default {
       const index = sequenceList.value.findIndex(
         (item) => item.id === currentSong.value.id
       );
+      if (index === -1) return;
       // 组件的dom元素在$el上
       const target = listRef.value.$el.children[index];
       scrollRef.value.scroll.scrollToElement(target, 300);
@@ -109,7 +115,13 @@ export default {
       store.commit("setPlayingState", true);
     }
     function removeSong(song) {
+      if (removing.value) return;
+
+      removing.value = true;
       store.dispatch("removeSong", song);
+      setTimeout(() => {
+        removing.value = false;
+      }, 300);
     }
 
     return {
@@ -123,6 +135,7 @@ export default {
       getCurrentIcon,
       selectSong,
       removeSong,
+      removing,
       // 组合api
       modeIcon,
       modeText,

@@ -35,7 +35,6 @@ export default function useMiniSlider() {
           });
           sliderVal.on("slidePageChanged", ({ pageX }) => {
             store.commit("setCurIndex", pageX);
-            store.commit("setPlayingState", true);
           });
         } else {
           sliderVal.refresh();
@@ -47,6 +46,12 @@ export default function useMiniSlider() {
     watch(currentIndex, (val) => {
       if (sliderVal && sliderShow.value) {
         sliderVal.goToPage(val, 0, 0);
+      }
+    });
+    watch(playList, async () => {
+      if (sliderVal && sliderShow.value) {
+        await nextTick();
+        sliderVal.refresh();
       }
     });
   });

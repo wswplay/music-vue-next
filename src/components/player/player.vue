@@ -192,6 +192,7 @@ export default {
       const audioEl = audioRef.value;
       audioEl.src = newSong.url;
       audioEl.play();
+      store.commit("setPlayingState", true);
     });
     watch(playing, (newPlaying) => {
       if (!isReady.value) return;
@@ -232,9 +233,6 @@ export default {
           index = listLen - 1;
         }
         store.commit("setCurIndex", index);
-        if (!playing.value) {
-          store.commit("setPlayingState", true);
-        }
       }
     }
     function next() {
@@ -248,9 +246,6 @@ export default {
           index = 0;
         }
         store.commit("setCurIndex", index);
-        if (!playing.value) {
-          store.commit("setPlayingState", true);
-        }
       }
     }
     function loop() {
