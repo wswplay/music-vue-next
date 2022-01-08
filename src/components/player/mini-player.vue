@@ -29,22 +29,29 @@
           ></i>
         </ProgressCircle>
       </div>
+      <div class="control" @click.stop="showPlayList">
+        <i class="icon-playlist"></i>
+      </div>
+      <PlayList ref="playListRef"></PlayList>
     </div>
   </transition>
 </template>
 
 <script>
-import { computed } from "@vue/reactivity";
+import { computed, ref } from "@vue/reactivity";
 import { useStore } from "vuex";
 import useCD from "./use-cd";
 import useMiniSlider from "./use-mini-slider";
 import ProgressCircle from "./progress-circle";
+import PlayList from "./playlist";
 
 export default {
   name: "mini-player",
-  components: { ProgressCircle },
+  components: { ProgressCircle, PlayList },
   props: ["progress", "togglePlay"],
   setup() {
+    const playListRef = ref(null);
+
     const store = useStore();
     const fullScreen = computed(() => store.state.fullScreen);
     const currentSong = computed(() => store.getters.currentSong);
@@ -59,6 +66,9 @@ export default {
     function shouNormalPlayer() {
       store.commit("setFullScreen", true);
     }
+    function showPlayList() {
+      playListRef.value.show();
+    }
 
     return {
       fullScreen,
@@ -66,6 +76,8 @@ export default {
       shouNormalPlayer,
       miniPlayIcon,
       playList,
+      playListRef,
+      showPlayList,
       // cd
       cdRef,
       cdClass,

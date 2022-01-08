@@ -1,6 +1,6 @@
 import { computed } from "vue";
 import { useStore } from "vuex";
-import { PLAY_MODE } from "@/assets/js/constant";
+import { PLAY_MODE, PLAY_MODE_TEXT } from "@/assets/js/constant";
 
 export default function useMode() {
   const store = useStore();
@@ -14,6 +14,7 @@ export default function useMode() {
       ? "icon-random"
       : "icon-loop";
   });
+  const modeText = computed(() => PLAY_MODE_TEXT[store.state.playMode]);
 
   function changeMode() {
     const mode = (playMode.value + 1) % 3;
@@ -21,6 +22,7 @@ export default function useMode() {
   }
   return {
     modeIcon,
+    modeText,
     changeMode,
   };
 }

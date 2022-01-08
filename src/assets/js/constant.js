@@ -10,3 +10,4 @@ export const PLAY_MODE = {
   loop: 1,
   random: 2,
 };
+export const PLAY_MODE_TEXT = ["顺序播放", "单曲循环", "随机播放"];
