@@ -1,7 +1,7 @@
 <template>
   <div class="search-input">
     <i class="icon-search"></i>
-    <input class="input-inner" v-model="query" />
+    <input class="input-inner" v-model="query" :placeholder="placeHolder" />
     <i v-show="query" class="icon-dismiss" @click="clear"></i>
   </div>
 </template>
@@ -13,6 +13,10 @@ export default {
   name: "search-input",
   props: {
     modelValue: String,
+    placeHolder: {
+      type: String,
+      default: "搜索歌曲、歌手",
+    },
   },
   data() {
     return {

@@ -3,26 +3,52 @@
     <div class="search-input-wrapper">
       <SearchInput v-model="query"></SearchInput>
     </div>
+    <div class="search-content" v-show="!query">
+      <div class="hot-keys">
+        <h1 class="title">热门搜索</h1>
+        <ul>
+          <li
+            class="item"
+            v-for="item in hotKeys"
+            :key="item.id"
+            @click="addQuery(item.key)"
+          >
+            <span>{{ item.key }}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="search-result" v-show="query">
+      <Suggest :query="query"></Suggest>
+    </div>
   </div>
 </template>
 
 <script>
 import SearchInput from "@/components/search/search-input";
+import Suggest from "@/components/search/suggest";
 import { ref } from "@vue/reactivity";
-import { watch } from "@vue/runtime-core";
+import { getHotKeys } from "@/service/search";
 
 export default {
   name: "search",
-  components: { SearchInput },
+  components: { SearchInput, Suggest },
   setup() {
     const query = ref("");
+    const hotKeys = ref([]);
 
-    watch(query, (val) => {
-      console.log(val);
+    getHotKeys().then((result) => {
+      hotKeys.value = result.hotKeys;
     });
+
+    function addQuery(key) {
+      query.value = key;
+    }
 
     return {
       query,
+      hotKeys,
+      addQuery,
     };
   },
 };
