@@ -22,7 +22,7 @@
       @scroll="onScroll"
     >
       <div class="song-list-wrapper">
-        <song-list :songs="songs"></song-list>
+        <song-list :songs="songs" :rank="rank"></song-list>
       </div>
     </scroll>
   </div>
@@ -55,6 +55,7 @@ export default {
       type: String,
       default: "毫无，歌曲",
     },
+    rank: Boolean,
   },
   data() {
     return {

@@ -6,8 +6,8 @@
       :key="song.id"
       @click="selectItem(index)"
     >
-      <div class="rank">
-        <span>{{ index }}</span>
+      <div v-if="rank" class="rank">
+        <span :class="getRankClass(index)">{{ getRankText(index) }}</span>
       </div>
       <div class="content">
         <h2 class="name">{{ song.name }}</h2>
@@ -29,6 +29,7 @@ export default {
         return [];
       },
     },
+    rank: Boolean,
   },
   methods: {
     ...mapActions(["selectPlay"]),
@@ -37,6 +38,13 @@ export default {
     },
     selectItem(index) {
       this.selectPlay({ list: this.songs, index });
+    },
+    getRankClass(index) {
+      if (index <= 2) return `icon icon${index}`;
+      return "text";
+    },
+    getRankText(index) {
+      if (index > 2) return index + 1;
     },
   },
 };
