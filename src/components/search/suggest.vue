@@ -1,5 +1,6 @@
 <template>
   <div
+    ref="rootRef"
     class="suggest"
     v-loading:[loadingText]="loading"
     v-noResult:[noResultText]="noResult"
@@ -21,6 +22,7 @@
           <p class="text">{{ song.singer }}-{{ song.name }}</p>
         </div>
       </li>
+      <div class="suggest-item" v-loading:[loadingText]="pullUpLoading"></div>
     </ul>
   </div>
 </template>
@@ -30,6 +32,7 @@ import { computed, ref } from "@vue/reactivity";
 import { watch } from "@vue/runtime-core";
 import { search } from "@/service/search";
 import { processSongs } from "@/service/song";
+import usePullUpLoad from "./use-pull-up-load";
 
 export default {
   name: "suggest",
@@ -45,10 +48,13 @@ export default {
     const loadingText = ref("");
     const noResultText = ref("毫无，搜索结果");
 
+    const { rootRef, isLoading } = usePullUpLoad(searchMore);
+
     const loading = computed(() => !singer.value && !songs.value.length);
     const noResult = computed(() => {
       return !singer.value && !songs.value.length && !hasMore.value;
     });
+    const pullUpLoading = computed(() => isLoading.value && hasMore.value);
 
     watch(
       () => props.query,
@@ -70,6 +76,14 @@ export default {
       hasMore.value = result.hasMore;
     }
 
+    async function searchMore() {
+      if (!hasMore.value) return;
+      page.value++;
+      const result = await search(props.query, page.value, props.showSinger);
+      songs.value = songs.value.concat(await processSongs(result.songs));
+      hasMore.value = result.hasMore;
+    }
+
     return {
       singer,
       songs,
@@ -77,6 +91,10 @@ export default {
       loadingText,
       noResult,
       noResultText,
+      pullUpLoading,
+      // pull-up
+      rootRef,
+      isLoading,
     };
   },
 };
