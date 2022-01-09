@@ -74,11 +74,8 @@ export default {
   methods: {
     selectAlbum(item) {
       this.itemInfo = item;
-      this.cacheAlbum();
+      storage.session.set(ALBUM_KEY, item);
       this.$router.push(`/recommend/${item.id}`);
-    },
-    cacheAlbum() {
-      storage.session.set(ALBUM_KEY, this.itemInfo);
     },
   },
 };

@@ -38,6 +38,13 @@ const routes = [
     path: "/top-list",
     component: () =>
       import(/* webpackChunkName: "top-list" */ "@/views/top-list"),
+    children: [
+      {
+        path: ":id",
+        component: () =>
+          import(/* webpackChunkName: "top-detail" */ "@/views/top-detail"),
+      },
+    ],
   },
 ];
 

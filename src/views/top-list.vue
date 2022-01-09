@@ -11,6 +11,7 @@
               class="song"
               v-for="(song, index) in item.songList"
               :key="song.id"
+              @click="selectItem(item)"
             >
               <span>{{ index + 1 }}. </span>
               <span>{{ song.songName }}-{{ song.singerName }}</span>
@@ -21,7 +22,7 @@
     </scroll>
     <router-view v-slot="{ Component }">
       <transition appear name="slide">
-        <component :is="Component" />
+        <component :is="Component" :itemInfo="itemInfo" />
       </transition>
     </router-view>
   </div>
@@ -30,6 +31,8 @@
 <script>
 import Scroll from "@/components/base/scroll/scroll";
 import { getTopList } from "@/service/top-list.js";
+import storage from "good-storage";
+import { TOP_KEY } from "@/assets/js/constant";
 
 export default {
   name: "top-list",
@@ -38,12 +41,20 @@ export default {
     return {
       loading: true,
       topList: [],
+      itemInfo: null,
     };
   },
   async created() {
     const result = await getTopList();
     this.topList = result.topList;
     this.loading = false;
+  },
+  methods: {
+    selectItem(item) {
+      this.itemInfo = item;
+      storage.session.set(TOP_KEY, item);
+      this.$router.push(`/top-list/${item.id}`);
+    },
   },
 };
 </script>
