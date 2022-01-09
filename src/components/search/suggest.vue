@@ -29,7 +29,7 @@
 
 <script>
 import { computed, ref } from "@vue/reactivity";
-import { watch } from "@vue/runtime-core";
+import { nextTick, watch } from "@vue/runtime-core";
 import { search } from "@/service/search";
 import { processSongs } from "@/service/song";
 import usePullUpLoad from "./use-pull-up-load";
@@ -48,7 +48,7 @@ export default {
     const loadingText = ref("");
     const noResultText = ref("毫无，搜索结果");
 
-    const { rootRef, isLoading } = usePullUpLoad(searchMore);
+    const { rootRef, isLoading, scroll } = usePullUpLoad(searchMore);
 
     const loading = computed(() => !singer.value && !songs.value.length);
     const noResult = computed(() => {
@@ -74,6 +74,8 @@ export default {
       songs.value = await processSongs(result.songs);
       singer.value = result.singer;
       hasMore.value = result.hasMore;
+      await nextTick();
+      await makeScrollable();
     }
 
     async function searchMore() {
@@ -82,6 +84,14 @@ export default {
       const result = await search(props.query, page.value, props.showSinger);
       songs.value = songs.value.concat(await processSongs(result.songs));
       hasMore.value = result.hasMore;
+      await nextTick();
+      await makeScrollable();
+    }
+
+    async function makeScrollable() {
+      if (scroll.value.maxScrollY >= -1) {
+        await searchMore();
+      }
     }
 
     return {
