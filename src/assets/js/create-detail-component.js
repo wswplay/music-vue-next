@@ -1,55 +1,58 @@
-import MusicList from '@/components/music-list/music-list'
-import storage from 'good-storage'
-import { processSongs } from '@/service/song'
+import MusicList from "@/components/music-list/music-list";
+import storage from "good-storage";
+import { processSongs } from "@/service/song.js";
 
 export default function createDetailComponent(name, key, fetch) {
   return {
     name,
-    components: { MusicList },
+    components: {
+      MusicList,
+    },
     props: {
-      data: Object
+      itemInfo: Object,
     },
     data() {
       return {
         songs: [],
-        loading: true
-      }
+        loading: true,
+      };
     },
     computed: {
-      computedData() {
-        let ret = null
-        const data = this.data
-        if (data) {
-          ret = data
+      curInfo() {
+        let info = null;
+        const tempInfo = this.itemInfo;
+        if (tempInfo) {
+          info = tempInfo;
         } else {
-          const cached = storage.session.get(key)
-          if (cached && (cached.mid || cached.id + '') === this.$route.params.id) {
-            ret = cached
+          const cachedInfo = storage.session.get(key);
+          if (
+            cachedInfo &&
+            (cachedInfo.mid || String(cachedInfo.id)) === this.$route.params.id
+          ) {
+            info = cachedInfo;
           }
         }
-        return ret
-      },
-      pic() {
-        const data = this.computedData
-        return data && data.pic
+        return info;
       },
       title() {
-        const data = this.computedData
-        return data && (data.name || data.title)
-      }
+        const tempInfo = this.curInfo;
+        return (tempInfo && (tempInfo.name || tempInfo.title)) || "";
+      },
+      pic() {
+        const tempInfo = this.curInfo;
+        return (tempInfo && tempInfo.pic) || "";
+      },
     },
     async created() {
-      const data = this.computedData
-      if (!data) {
-        const path = this.$route.matched[0].path
-        this.$router.push({
-          path
-        })
-        return
+      const tempInfo = this.curInfo;
+      if (!tempInfo || !tempInfo.id) {
+        const path = this.$route.matched[0].path;
+        this.$router.push(path);
+        return;
       }
-      const result = await fetch(data)
-      this.songs = await processSongs(result.songs)
-      this.loading = false
-    }
-  }
+      const result = await fetch(tempInfo);
+      this.songs = await processSongs(result.songs);
+      this.loading = false;
+    },
+  };
 }

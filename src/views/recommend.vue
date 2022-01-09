@@ -10,7 +10,12 @@
         <div class="recommend-list" v-show="!loading">
           <h1 class="list-title">热门歌单推荐</h1>
           <ul>
-            <li v-for="item in albums" class="item" :key="item.id">
+            <li
+              v-for="item in albums"
+              class="item"
+              :key="item.id"
+              @click="selectAlbum(item)"
+            >
               <div class="icon">
                 <img width="60" height="60" v-lazy="item.pic" />
               </div>
@@ -27,6 +32,11 @@
         </div>
       </div>
     </Scroll>
+    <router-view v-slot="{ Component }">
+      <transition appear name="slide">
+        <component :is="Component" :itemInfo="itemInfo" />
+      </transition>
+    </router-view>
   </div>
 </template>
 
@@ -34,6 +44,8 @@
 import { getRecommend } from "@/service/recommend";
 import Slider from "@/components/base/slider/slider";
 import Scroll from "@/components/wrap-scroll";
+import storage from "good-storage";
+import { ALBUM_KEY } from "@/assets/js/constant";
 
 export default {
   name: "recommend",
@@ -51,12 +63,23 @@ export default {
       sliders: [],
       albums: [],
       loadingTitle: "看，灰机...",
+      itemInfo: null,
     };
   },
   async created() {
     const result = await getRecommend();
     this.sliders = result.sliders;
     this.albums = result.albums;
+  },
+  methods: {
+    selectAlbum(item) {
+      this.itemInfo = item;
+      this.cacheAlbum();
+      this.$router.push(`/recommend/${item.id}`);
+    },
+    cacheAlbum() {
+      storage.session.set(ALBUM_KEY, this.itemInfo);
+    },
   },
 };
 </script>

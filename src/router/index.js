@@ -9,6 +9,13 @@ const routes = [
     path: "/recommend",
     component: () =>
       import(/* webpackChunkName: "recommend" */ "@/views/recommend"),
+    children: [
+      {
+        path: ":id",
+        component: () =>
+          import(/* webpackChunkName: "album" */ "@/views/album"),
+      },
+    ],
   },
   {
     path: "/search",

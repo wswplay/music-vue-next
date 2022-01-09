@@ -3,7 +3,7 @@
     <IndexList :data="singers" @selectSinger="selectSinger"></IndexList>
     <router-view v-slot="{ Component }">
       <transition appear name="slide">
-        <component :is="Component" :singerInfo="singerInfo" />
+        <component :is="Component" :itemInfo="singerInfo" />
       </transition>
     </router-view>
   </div>
