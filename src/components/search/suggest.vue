@@ -1,5 +1,9 @@
 <template>
-  <div class="suggest" v-loading:[loadingText]="!singer && !songs.length">
+  <div
+    class="suggest"
+    v-loading:[loadingText]="loading"
+    v-noResult:[noResultText]="noResult"
+  >
     <ul class="suggest-list">
       <li class="suggest-item" v-if="singer">
         <div class="icon">
@@ -22,7 +26,7 @@
 </template>
 
 <script>
-import { ref } from "@vue/reactivity";
+import { computed, ref } from "@vue/reactivity";
 import { watch } from "@vue/runtime-core";
 import { search } from "@/service/search";
 import { processSongs } from "@/service/song";
@@ -39,6 +43,12 @@ export default {
     const hasMore = ref(true);
     const page = ref(1);
     const loadingText = ref("");
+    const noResultText = ref("毫无，搜索结果");
+
+    const loading = computed(() => !singer.value && !songs.value.length);
+    const noResult = computed(() => {
+      return !singer.value && !songs.value.length && !hasMore.value;
+    });
 
     watch(
       () => props.query,
@@ -63,7 +73,10 @@ export default {
     return {
       singer,
       songs,
+      loading,
       loadingText,
+      noResult,
+      noResultText,
     };
   },
 };

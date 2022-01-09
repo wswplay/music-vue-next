@@ -11,7 +11,7 @@ export function processSongs(songs) {
         item.url = urls[item.mid];
         return item;
       })
-      .filter((item) => item.url.indexOf("vkey") > -1);
+      .filter((item) => item.url && item.url.indexOf("vkey") > -1);
   });
 }
 
