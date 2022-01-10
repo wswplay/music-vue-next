@@ -26,6 +26,9 @@ const mutations = {
       return item;
     });
   },
+  setSearchHistory(state, list) {
+    state.searchHistory = list;
+  },
 };
 
 export default mutations;

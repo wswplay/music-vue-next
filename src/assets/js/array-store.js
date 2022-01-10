@@ -31,3 +31,8 @@ function insertArray(arr, val, compare, maxLength) {
 export function loadStorage(key) {
   return storage.get(key, []);
 }
+
+export function clear(key) {
+  storage.remove(key);
+  return [];
+}
