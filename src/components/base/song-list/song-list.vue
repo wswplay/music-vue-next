@@ -4,7 +4,7 @@
       class="item"
       v-for="(song, index) in songs"
       :key="song.id"
-      @click="selectItem(index)"
+      @click="selectItem(song, index)"
     >
       <div v-if="rank" class="rank">
         <span :class="getRankClass(index)">{{ getRankText(index) }}</span>
@@ -31,13 +31,14 @@ export default {
     },
     rank: Boolean,
   },
+  emits: ["select"],
   methods: {
     ...mapActions(["selectPlay"]),
     getDesc(song) {
       return `${song.singer}·${song.album}`;
     },
-    selectItem(index) {
-      this.selectPlay({ list: this.songs, index });
+    selectItem(song, index) {
+      this.$emit("select", { song, index });
     },
     getRankClass(index) {
       if (index <= 2) return `icon icon${index}`;

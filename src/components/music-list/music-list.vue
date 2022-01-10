@@ -22,7 +22,7 @@
       @scroll="onScroll"
     >
       <div class="song-list-wrapper">
-        <song-list :songs="songs" :rank="rank"></song-list>
+        <song-list :songs="songs" @select="selectItem" :rank="rank"></song-list>
       </div>
     </scroll>
   </div>
@@ -129,12 +129,18 @@ export default {
     this.maxTranslateY = this.imageHeight - RESERVED_HEIGHT;
   },
   methods: {
-    ...mapActions(["randomPlay"]),
+    ...mapActions(["randomPlay", "selectPlay"]),
     goBack() {
       this.$router.back();
     },
     onScroll(pos) {
       this.scrollY = -pos.y;
+    },
+    selectItem({ index }) {
+      this.selectPlay({
+        list: this.songs,
+        index,
+      });
     },
   },
 };

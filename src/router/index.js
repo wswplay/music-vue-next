@@ -55,6 +55,11 @@ const routes = [
       },
     ],
   },
+  {
+    path: "/user",
+    component: () =>
+      import(/* webpackChunkName: "user-center" */ "@/views/user-center"),
+  },
 ];
 
 const router = createRouter({

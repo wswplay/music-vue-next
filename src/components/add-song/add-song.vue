@@ -23,7 +23,7 @@
               class="list-scroll"
             >
               <div class="list-inner">
-                <SongList :songs="playHistory"> </SongList>
+                <SongList :songs="playHistory" @select="selectSong"> </SongList>
               </div>
             </Scroll>
             <Scroll
@@ -113,6 +113,9 @@ export default {
     function addQuery(s) {
       query.value = s;
     }
+    function selectSong({ song }) {
+      addSong(song);
+    }
     function suggestSong(song) {
       addSong(song);
       saveSearch(query.value);
@@ -140,6 +143,7 @@ export default {
       hide,
       addQuery,
       suggestSong,
+      selectSong,
     };
   },
 };
