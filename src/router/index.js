@@ -20,6 +20,15 @@ const routes = [
   {
     path: "/search",
     component: () => import(/* webpackChunkName: "search" */ "@/views/search"),
+    children: [
+      {
+        path: ":id",
+        component: () =>
+          import(
+            /* webpackChunkName: "singer-detail" */ "@/views/singer-detail"
+          ),
+      },
+    ],
   },
   {
     path: "/singer",

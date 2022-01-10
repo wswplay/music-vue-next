@@ -19,8 +19,17 @@
       </div>
     </div>
     <div class="search-result" v-show="query">
-      <Suggest :query="query"></Suggest>
+      <Suggest
+        :query="query"
+        @selectSong="selectSong"
+        @selectSinger="selectSinger"
+      ></Suggest>
     </div>
+    <router-view v-slot="{ Component }">
+      <transition appear name="slide">
+        <component :is="Component" :itemInfo="singerInfo" />
+      </transition>
+    </router-view>
   </div>
 </template>
 
@@ -29,13 +38,21 @@ import SearchInput from "@/components/search/search-input";
 import Suggest from "@/components/search/suggest";
 import { ref } from "@vue/reactivity";
 import { getHotKeys } from "@/service/search";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+import storage from "good-storage";
+import { SINGER_KEY } from "@/assets/js/constant";
 
 export default {
   name: "search",
   components: { SearchInput, Suggest },
   setup() {
+    const store = useStore();
+    const router = useRouter();
+
     const query = ref("");
     const hotKeys = ref([]);
+    const singerInfo = ref(null);
 
     getHotKeys().then((result) => {
       hotKeys.value = result.hotKeys;
@@ -45,10 +62,22 @@ export default {
       query.value = key;
     }
 
+    function selectSong(song) {
+      store.dispatch("addSong", song);
+    }
+    function selectSinger(singer) {
+      singerInfo.value = singer;
+      storage.session.set(SINGER_KEY, singer);
+      router.push(`/search/${singer.mid}`);
+    }
+
     return {
       query,
       hotKeys,
       addQuery,
+      selectSong,
+      singerInfo,
+      selectSinger,
     };
   },
 };

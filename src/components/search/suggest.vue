@@ -6,7 +6,7 @@
     v-noResult:[noResultText]="noResult"
   >
     <ul class="suggest-list">
-      <li class="suggest-item" v-if="singer">
+      <li class="suggest-item" v-if="singer" @click="lookSinger(singer)">
         <div class="icon">
           <i class="icon-mine"></i>
         </div>
@@ -14,7 +14,12 @@
           <p class="text">{{ singer.name }}</p>
         </div>
       </li>
-      <li class="suggest-item" v-for="song in songs" :key="song.id">
+      <li
+        class="suggest-item"
+        v-for="song in songs"
+        :key="song.id"
+        @click="selectSongItem(song)"
+      >
         <div class="icon">
           <i class="icon-music"></i>
         </div>
@@ -40,7 +45,8 @@ export default {
     query: String,
     showSinger: Boolean,
   },
-  setup(props) {
+  emits: ["selectSong", "selectSinger"],
+  setup(props, { emit }) {
     const singer = ref(null);
     const songs = ref([]);
     const hasMore = ref(true);
@@ -104,6 +110,13 @@ export default {
       }
     }
 
+    function selectSongItem(song) {
+      emit("selectSong", song);
+    }
+    function lookSinger(singer) {
+      emit("selectSinger", singer);
+    }
+
     return {
       singer,
       songs,
@@ -112,6 +125,8 @@ export default {
       noResult,
       noResultText,
       pullUpLoading,
+      selectSongItem,
+      lookSinger,
       // pull-up
       rootRef,
       isLoading,

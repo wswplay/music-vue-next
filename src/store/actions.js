@@ -60,6 +60,28 @@ export function clearSongList({ commit }) {
   commit("setPlayingState", false);
 }
 
+export function addSong({ commit, state }, song) {
+  const playList = state.playList.slice();
+  const sequenceList = state.sequenceList.slice();
+  let curIndex = state.curIndex;
+  const playIndex = findItemIndex(playList, song);
+  const sequenceIndex = findItemIndex(sequenceList, song);
+
+  if (playIndex > -1) {
+    curIndex = playIndex;
+  } else {
+    playList.push(song);
+    curIndex = playList.length - 1;
+  }
+  if (sequenceIndex === -1) sequenceList.push(song);
+
+  commit("setSequenceList", sequenceList);
+  commit("setPlayList", playList);
+  commit("setCurIndex", curIndex);
+  commit("setPlayingState", true);
+  commit("setFullScreen", true);
+}
+
 function findItemIndex(list, item) {
   return list.findIndex((sit) => sit.id === item.id);
 }

@@ -33,13 +33,10 @@ export default {
   methods: {
     selectSinger(info) {
       this.singerInfo = info;
-      this.cacheSingerInfo();
+      storage.session.set(SINGER_KEY, info);
       this.$router.push({
         path: `/singer/${info.mid}`,
       });
-    },
-    cacheSingerInfo() {
-      storage.session.set(SINGER_KEY, this.singerInfo);
     },
   },
 };
