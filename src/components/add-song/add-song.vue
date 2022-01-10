@@ -49,6 +49,12 @@
           >
           </Suggest>
         </div>
+        <Message ref="messageRef">
+          <div class="message-title">
+            <i class="icon-ok"></i>
+            <span class="text">1首歌曲已经添加到播放列表</span>
+          </div>
+        </Message>
       </div>
     </transition>
   </teleport>
@@ -64,17 +70,27 @@ import Switches from "@/components/base/switches/switches";
 import SongList from "@/components/base/song-list/song-list";
 import SearchList from "@/components/base/search-list/search-list";
 import Scroll from "@/components/base/scroll/scroll";
+import Message from "@/components/base/message/message";
 import useSearchHistory from "@/components/search/use-search-history";
 
 export default {
   name: "add-song",
-  components: { SearchInput, Suggest, Switches, SongList, SearchList, Scroll },
+  components: {
+    SearchInput,
+    Suggest,
+    Switches,
+    SongList,
+    SearchList,
+    Scroll,
+    Message,
+  },
   setup() {
     const visible = ref(false);
     const query = ref("");
     const currentIndex = ref(0);
     const store = useStore();
     const scrollRef = ref(null);
+    const messageRef = ref(null);
 
     const searchHistory = computed(() => store.state.searchHistory);
     const playHistory = computed(() => store.state.playHistory);
@@ -103,13 +119,18 @@ export default {
     }
     function addSong(song) {
       store.dispatch("addSong", song);
+      showMessage();
     }
     function refreshScroll() {
       scrollRef.value.scroll.refresh();
     }
+    function showMessage() {
+      messageRef.value.show();
+    }
 
     return {
       scrollRef,
+      messageRef,
       visible,
       query,
       currentIndex,
