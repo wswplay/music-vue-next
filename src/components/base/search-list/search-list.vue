@@ -8,7 +8,7 @@
         @click="selectItem(item)"
       >
         <span class="text">{{ item }}</span>
-        <span class="icon" @click.stop="deleteItem(item)">
+        <span v-if="showDelIcon" class="icon" @click.stop="deleteItem(item)">
           <i class="icon-delete"></i>
         </span>
       </li>
@@ -25,6 +25,10 @@ export default {
       default() {
         return [];
       },
+    },
+    showDelIcon: {
+      type: Boolean,
+      default: true,
     },
   },
   emits: ["select", "delete"],

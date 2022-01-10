@@ -36,7 +36,7 @@
             </transition-group>
           </scroll>
           <div class="list-add">
-            <div class="add">
+            <div class="add" @click="showAddSong">
               <i class="icon-add"></i>
               <span class="text">添加歌曲到队列</span>
             </div>
@@ -50,6 +50,7 @@
             confirm-btn-text="清空"
             @confirm="confirmClear"
           ></Confirm>
+          <AddSong ref="addSongRef"></AddSong>
         </div>
       </div>
     </transition>
@@ -59,6 +60,7 @@
 <script>
 import Scroll from "@/components/base/scroll/scroll";
 import Confirm from "@/components/base/confirm/confirm";
+import AddSong from "@/components/add-song/add-song";
 import { computed, ref } from "@vue/reactivity";
 import { useStore } from "vuex";
 import useMode from "./use-mode";
@@ -67,11 +69,13 @@ import { nextTick, watch } from "@vue/runtime-core";
 
 export default {
   name: "playlist",
-  components: { Scroll, Confirm },
+  components: { Scroll, Confirm, AddSong },
   setup() {
     const scrollRef = ref(null);
     const listRef = ref(null);
     const confirmRef = ref(null);
+    const addSongRef = ref(null);
+
     let visible = ref(false);
     let removing = ref(false);
 
@@ -140,6 +144,9 @@ export default {
       store.dispatch("clearSongList");
       hide();
     }
+    function showAddSong() {
+      addSongRef.value.show();
+    }
 
     return {
       scrollRef,
@@ -156,6 +163,8 @@ export default {
       confirmRef,
       showConfirm,
       confirmClear,
+      addSongRef,
+      showAddSong,
       // 组合api
       modeIcon,
       modeText,
