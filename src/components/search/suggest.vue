@@ -47,14 +47,21 @@ export default {
     const page = ref(1);
     const loadingText = ref("");
     const noResultText = ref("毫无，搜索结果");
-
-    const { rootRef, isLoading, scroll } = usePullUpLoad(searchMore);
+    const manualLoading = ref(false);
 
     const loading = computed(() => !singer.value && !songs.value.length);
     const noResult = computed(() => {
       return !singer.value && !songs.value.length && !hasMore.value;
     });
     const pullUpLoading = computed(() => isLoading.value && hasMore.value);
+    const preventPullUpLoad = computed(
+      () => loading.value || manualLoading.value
+    );
+
+    const { rootRef, isLoading, scroll } = usePullUpLoad(
+      searchMore,
+      preventPullUpLoad
+    );
 
     watch(
       () => props.query,
@@ -65,6 +72,7 @@ export default {
     );
 
     async function searchFirst() {
+      if (!props.query) return;
       singer.value = null;
       songs.value = [];
       hasMore.value = true;
@@ -79,7 +87,7 @@ export default {
     }
 
     async function searchMore() {
-      if (!hasMore.value) return;
+      if (!hasMore.value || !props.query) return;
       page.value++;
       const result = await search(props.query, page.value, props.showSinger);
       songs.value = songs.value.concat(await processSongs(result.songs));
@@ -90,7 +98,9 @@ export default {
 
     async function makeScrollable() {
       if (scroll.value.maxScrollY >= -1) {
+        manualLoading.value = true;
         await searchMore();
+        manualLoading.value = false;
       }
     }
 
