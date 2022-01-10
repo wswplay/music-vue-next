@@ -37,3 +37,7 @@ export function clear(key) {
   storage.remove(key);
   return [];
 }
+
+export function saveAll(key, list) {
+  storage.set(key, list);
+}

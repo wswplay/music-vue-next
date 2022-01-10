@@ -57,8 +57,10 @@ const routes = [
   },
   {
     path: "/user",
-    component: () =>
-      import(/* webpackChunkName: "user-center" */ "@/views/user-center"),
+    components: {
+      user: () =>
+        import(/* webpackChunkName: "user-center" */ "@/views/user-center"),
+    },
   },
 ];
 
