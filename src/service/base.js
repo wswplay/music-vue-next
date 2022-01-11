@@ -1,8 +1,11 @@
 import axios from "wswplay-ts-rest-axios";
 axios.defaults = axios.defaultConf;
 
-const baseURL = "/";
 const ERR_CODE = 0;
+const baseURL =
+  process.env.NODE_ENV === "production"
+    ? "http://ustbhuangyi.com/music-next/"
+    : "/";
 
 axios.defaults.url = baseURL;
 
